@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,7 +53,7 @@ public class MerchantUserService {
         userResponse.put("email", user.getEmail());
         userResponse.put("merchant_id", user.getMerchant_id());
         userResponse.put("logo", user.getLogo());
-        userResponse.put("role_id", user.getRole_id());
+        userResponse.put("role", user.getRole().getRole_name());
 
         Map<String, Object> response = new HashMap<>();
         response.put("access_token", token);
