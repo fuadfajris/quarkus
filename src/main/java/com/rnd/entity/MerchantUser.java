@@ -23,8 +23,9 @@ public class MerchantUser {
     @Column(nullable = false)
     private Long merchant_id;
 
-    @Column(nullable = false)
-    private Long role_id;
+    @ManyToOne
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    private Role role;
 
     @Column
     private String logo;
@@ -51,9 +52,6 @@ public class MerchantUser {
     public Long getMerchant_id() { return merchant_id; }
     public void setMerchant_id(Long merchant_id) { this.merchant_id = merchant_id; }
 
-    public Long getRole_id() { return role_id; }
-    public void setRole_id(Long role_id) { this.role_id = role_id; }
-
     public String getLogo() { return logo; }
     public void setLogo(String logo) { this.logo = logo; }
 
@@ -62,4 +60,12 @@ public class MerchantUser {
 
     public LocalDateTime getUpdated_at() { return updated_at; }
     public void setUpdated_at(LocalDateTime updated_at) { this.updated_at = updated_at; }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }
