@@ -11,7 +11,6 @@ import jakarta.transaction.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +20,7 @@ public class MerchantUserService {
     @Inject
     EntityManager em;
 
-    public Map<String, Object> login(String email, String password) throws Exception {
+    public Map<String, Object> login(String email, String password) {
         TypedQuery<MerchantUser> query = em.createQuery(
                 "SELECT m FROM MerchantUser m WHERE m.email = :email", MerchantUser.class
         );
@@ -31,16 +30,15 @@ public class MerchantUserService {
         try {
             user = query.getSingleResult();
         } catch (Exception e) {
-            throw new Exception("User not found");
+            return null;
         }
 
         // cek password
         BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), user.getPassword());
         if (!result.verified) {
-            throw new Exception("Invalid Credential");
+            return null;
         }
 
-        // buat payload JWT
         String token = Jwt.issuer("lifestyle-api")
                 .subject(String.valueOf(user.getId()))
                 .claim("email", user.getEmail())
@@ -56,6 +54,7 @@ public class MerchantUserService {
         userResponse.put("role", user.getRole().getRole_name());
 
         Map<String, Object> response = new HashMap<>();
+        response.put("status", true);
         response.put("access_token", token);
         response.put("user", userResponse);
 

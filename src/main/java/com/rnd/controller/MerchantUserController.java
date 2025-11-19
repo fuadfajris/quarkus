@@ -6,6 +6,8 @@ import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+
 import java.util.Map;
 
 @Path("/merchant-users")
@@ -18,11 +20,28 @@ public class MerchantUserController {
 
     @POST
     @Path("/login")
-    public Map<String, Object> login(Map<String, String> body) throws Exception {
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response login(Map<String, String> body) {
         String email = body.get("email");
         String password = body.get("password");
-        return service.login(email, password);
+
+        Map<String, Object> result = service.login(email, password);
+
+        // jika result == null → login gagal
+        if (result == null) {
+            return Response
+                    .status(Response.Status.UNAUTHORIZED)
+                    .entity(Map.of(
+                            "status", false,
+                            "message", "Invalid email or password"
+                    ))
+                    .build();
+        }
+
+        return Response.ok(result).build();
     }
+
 
     @Authenticated
     @GET
